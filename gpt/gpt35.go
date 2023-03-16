@@ -6,8 +6,8 @@ package gpt
 import (
 	"context"
 	"github.com/otiai10/openaigo"
-	"github.com/qingconglaixueit/abing_logger"
 	"github.com/qingconglaixueit/wechatbot/config"
+	"github.com/qingconglaixueit/wechatbot/pkg/logger"
 )
 
 type MyGpt struct {
@@ -30,7 +30,7 @@ func (c *MyGpt) Gpt3P5(req string) (string, error) {
 
 	rsp, err := c.C.Chat(ctx, request)
 	if err != nil {
-		abing_logger.SugarLogger.Errorf("gpt client chat erorr:%+v", err)
+		logger.Warning("gpt client chat error:%+v", err)
 		return "", err
 	}
 
