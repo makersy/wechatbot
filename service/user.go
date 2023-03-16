@@ -1,9 +1,9 @@
 package service
 
 import (
-	"github.com/qingconglaixueit/wechatbot/config"
 	"github.com/eatmoreapple/openwechat"
 	"github.com/patrickmn/go-cache"
+	"github.com/qingconglaixueit/wechatbot/config"
 	"time"
 )
 
@@ -32,7 +32,7 @@ func NewUserService(cache *cache.Cache, user *openwechat.User) UserServiceInterf
 	}
 }
 
-// ClearUserSessionContext 清空GTP上下文，接收文本中包含`我要问下一个问题`，并且Unicode 字符数量不超过20就清空
+// ClearUserSessionContext 清空GPT上下文，接收文本中包含`我要问下一个问题`，并且Unicode 字符数量不超过20就清空
 func (s *UserService) ClearUserSessionContext() {
 	s.cache.Delete(s.user.ID())
 }
@@ -55,7 +55,7 @@ func (s *UserService) GetUserSessionContext() string {
 	return contextText
 }
 
-// SetUserSessionContext 设置用户会话上下文文本，question用户提问内容，GTP回复内容
+// SetUserSessionContext 设置用户会话上下文文本，question用户提问内容，GPT回复内容
 func (s *UserService) SetUserSessionContext(question, reply string) {
 	value := question + "\n" + reply
 	s.cache.Set(s.user.ID(), value, time.Second*config.LoadConfig().SessionTimeout)

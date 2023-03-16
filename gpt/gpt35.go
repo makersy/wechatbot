@@ -27,6 +27,7 @@ func (c *MyGpt) Gpt3P5(req string) string {
 		},
 	}
 	ctx := context.Background()
+
 	rsp, err := c.C.Chat(ctx, request)
 	if err != nil {
 		abing_logger.SugarLogger.Errorf("gpt client chat erorr:%+v", err)

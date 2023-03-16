@@ -43,7 +43,7 @@ type ChatGPTRequestBody struct {
 	PresencePenalty  int     `json:"presence_penalty"`
 }
 
-// Completions gtp文本模型回复
+// Completions GPT文本模型回复
 //curl https://api.openai.com/v1/completions
 //-H "Content-Type: application/json"
 //-H "Authorization: Bearer your chatGPT key"
@@ -81,7 +81,7 @@ func Completions(msg string) (string, error) {
 	defer response.Body.Close()
 	if response.StatusCode != 200 {
 		body, _ := ioutil.ReadAll(response.Body)
-		return "", errors.New(fmt.Sprintf("请求GTP出错了，gpt api status code not equals 200,code is %d ,details:  %v ", response.StatusCode, string(body)))
+		return "", errors.New(fmt.Sprintf("请求GPT出错了，gpt api status code not equals 200,code is %d ,details:  %v ", response.StatusCode, string(body)))
 	}
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
