@@ -37,14 +37,14 @@ type ChoiceItem struct {
 
 // ChatGPTRequestBody 响应体
 type ChatGPTRequestBody struct {
-	Model            string                 `json:"model"`
-	Messages         []openaigo.ChatMessage `json:"messages"`
-	Prompt           string                 `json:"prompt"`
-	MaxTokens        uint                   `json:"max_tokens"`
-	Temperature      float64                `json:"temperature"`
-	TopP             int                    `json:"top_p"`
-	FrequencyPenalty int                    `json:"frequency_penalty"`
-	PresencePenalty  int                    `json:"presence_penalty"`
+	Model            string                 `json:"model,omitempty"`
+	Messages         []openaigo.ChatMessage `json:"messages,omitempty"`
+	Prompt           string                 `json:"prompt,omitempty"`
+	MaxTokens        uint                   `json:"max_tokens,omitempty"`
+	Temperature      float64                `json:"temperature,omitempty"`
+	TopP             int                    `json:"top_p,omitempty"`
+	FrequencyPenalty int                    `json:"frequency_penalty,omitempty"`
+	PresencePenalty  int                    `json:"presence_penalty,omitempty"`
 }
 
 // Completions GPT文本模型回复
