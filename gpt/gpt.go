@@ -15,7 +15,7 @@ import (
 	"time"
 )
 
-const BASEURL = "https://api.openai.com/v1/"
+const BASEURL = "https://open.haoliny.top/v1/"
 
 // ChatGPTResponseBody 请求体
 type ChatGPTResponseBody struct {
