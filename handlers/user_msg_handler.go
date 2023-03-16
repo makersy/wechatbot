@@ -82,8 +82,8 @@ func (h *UserMessageHandler) ReplyText() error {
 	}
 	logger.Info(fmt.Sprintf("h.sender.NickName == %+v", h.sender.NickName))
 	// 2.向GPT发起请求，如果回复文本等于空,不回复
-	reply, err = h.gptClient.Gpt3P5(h.getRequestText())
-	//reply, err = gpt.Completions(h.getRequestText())
+	//reply, err = h.gptClient.Gpt3P5(h.getRequestText())
+	reply, err = gpt.Completions(h.getRequestText())
 	if err != nil {
 		// 2.1 将GPT请求失败信息输出给用户，省得整天来问又不知道日志在哪里。
 		errMsg := fmt.Sprintf("gpt request error: %v", err)

@@ -5,11 +5,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/otiai10/openaigo"
 	"github.com/qingconglaixueit/wechatbot/config"
 	"github.com/qingconglaixueit/wechatbot/pkg/logger"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -26,21 +28,23 @@ type ChatGPTResponseBody struct {
 }
 
 type ChoiceItem struct {
-	Text         string `json:"text"`
-	Index        int    `json:"index"`
-	Logprobs     int    `json:"logprobs"`
-	FinishReason string `json:"finish_reason"`
+	Message      openaigo.ChatMessage `json:"message"`
+	Text         string               `json:"text"`
+	Index        int                  `json:"index"`
+	Logprobs     int                  `json:"logprobs"`
+	FinishReason string               `json:"finish_reason"`
 }
 
 // ChatGPTRequestBody 响应体
 type ChatGPTRequestBody struct {
-	Model            string  `json:"model"`
-	Prompt           string  `json:"prompt"`
-	MaxTokens        uint    `json:"max_tokens"`
-	Temperature      float64 `json:"temperature"`
-	TopP             int     `json:"top_p"`
-	FrequencyPenalty int     `json:"frequency_penalty"`
-	PresencePenalty  int     `json:"presence_penalty"`
+	Model            string                 `json:"model"`
+	Messages         []openaigo.ChatMessage `json:"messages"`
+	Prompt           string                 `json:"prompt"`
+	MaxTokens        uint                   `json:"max_tokens"`
+	Temperature      float64                `json:"temperature"`
+	TopP             int                    `json:"top_p"`
+	FrequencyPenalty int                    `json:"frequency_penalty"`
+	PresencePenalty  int                    `json:"presence_penalty"`
 }
 
 // Completions GPT文本模型回复
@@ -52,6 +56,7 @@ func Completions(msg string) (string, error) {
 	cfg := config.LoadConfig()
 	requestBody := ChatGPTRequestBody{
 		Model:            cfg.Model,
+		Messages:         []openaigo.ChatMessage{{Role: "user", Content: msg}},
 		Prompt:           msg,
 		MaxTokens:        cfg.MaxTokens,
 		Temperature:      cfg.Temperature,
@@ -65,7 +70,16 @@ func Completions(msg string) (string, error) {
 		return "", err
 	}
 	logger.Info(fmt.Sprintf("request gpt json string : %v", string(requestData)))
-	req, err := http.NewRequest("POST", BASEURL+"completions", bytes.NewBuffer(requestData))
+
+	var req *http.Request
+	switch {
+	case strings.Contains(requestBody.Model, "gpt-3.5"):
+		req, err = http.NewRequest("POST", BASEURL+"chat/completions", bytes.NewBuffer(requestData))
+		break
+	default:
+		req, err = http.NewRequest("POST", BASEURL+"completions", bytes.NewBuffer(requestData))
+		break
+	}
 	if err != nil {
 		return "", err
 	}
@@ -98,7 +112,12 @@ func Completions(msg string) (string, error) {
 
 	var reply string
 	if len(gptResponseBody.Choices) > 0 {
-		reply = gptResponseBody.Choices[0].Text
+		switch {
+		case strings.Contains(requestBody.Model, "gpt-3.5"):
+			reply = gptResponseBody.Choices[0].Message.Content
+		default:
+			reply = gptResponseBody.Choices[0].Text
+		}
 	}
 	logger.Info(fmt.Sprintf("gpt response text: %s ", reply))
 	return reply, nil
