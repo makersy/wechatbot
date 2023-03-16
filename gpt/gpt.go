@@ -56,30 +56,32 @@ func Completions(msg string) (string, error) {
 	cfg := config.LoadConfig()
 	requestBody := ChatGPTRequestBody{
 		Model:            cfg.Model,
-		Messages:         []openaigo.ChatMessage{{Role: "user", Content: msg}},
-		Prompt:           msg,
 		MaxTokens:        cfg.MaxTokens,
 		Temperature:      cfg.Temperature,
 		TopP:             1,
 		FrequencyPenalty: 0,
 		PresencePenalty:  0,
 	}
-	requestData, err := json.Marshal(requestBody)
+	var url string
+	switch {
+	case strings.Contains(requestBody.Model, "gpt-3.5"):
+		requestBody.Messages = []openaigo.ChatMessage{{Role: "user", Content: msg}}
+		url = BASEURL + "chat/completions"
+		break
+	default:
+		requestBody.Prompt = msg
+		url = BASEURL + "completions"
+		break
+	}
 
+	requestData, err := json.Marshal(requestBody)
 	if err != nil {
 		return "", err
 	}
-	logger.Info(fmt.Sprintf("request gpt json string : %v", string(requestData)))
+	logger.Info(fmt.Sprintf("request gpt json string : %+v", requestBody))
 
-	var req *http.Request
-	switch {
-	case strings.Contains(requestBody.Model, "gpt-3.5"):
-		req, err = http.NewRequest("POST", BASEURL+"chat/completions", bytes.NewBuffer(requestData))
-		break
-	default:
-		req, err = http.NewRequest("POST", BASEURL+"completions", bytes.NewBuffer(requestData))
-		break
-	}
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestData))
+
 	if err != nil {
 		return "", err
 	}
