@@ -78,7 +78,7 @@ func Completions(msg string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	logger.Info(fmt.Sprintf("request gpt json string : %+v", requestBody))
+	logger.Info(fmt.Sprintf("request gpt json string : %v", string(requestData)))
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestData))
 
